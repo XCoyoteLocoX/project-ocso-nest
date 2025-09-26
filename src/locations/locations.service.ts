@@ -2,15 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import {Repository} from 'typeorm'
+import { InjectRepository } from '@nestjs/typeorm';
 import {Location} from './entities/location.entity'
 
 @Injectable()
 export class LocationsService {
     constructor(
+      @InjectRepository(Location)
       private locationRepository: Repository <Location>
     ){}
-    create(CreateLocationDto: CreateLocationDto){
-      return this.locationRepository.save(CreateLocationDto)
+    create(createLocationDto: CreateLocationDto){
+      return this.locationRepository.save(createLocationDto)
     }
 
 
@@ -22,6 +24,7 @@ export class LocationsService {
     const location = this.locationRepository.findOneBy({
       locationId:id,
     })
+    if (!location) throw new NotFoundException("No location found")
   }
 
   async update(id: number, updateLocationDto: UpdateLocationDto) {

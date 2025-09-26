@@ -45,7 +45,7 @@ export class ProvidersService {
         return providerToUpdate;
   }
 
-  remove(id: string) {
+  remove(id: string) { 
     return `This action removes a #${id} provider`;
   }
 }
