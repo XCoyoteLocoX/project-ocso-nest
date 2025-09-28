@@ -2,19 +2,34 @@ import {Column, Entity, PrimaryGeneratedColumn,OneToOne, JoinColumn, ManyToOne, 
 import {Manager} from "src/managers/entities/manager.entity"
 import {Region} from "src/regions/entities/region.entity"
 import {Employee} from "src/employees/entities/employee.entity"
+import { ApiProperty } from "@nestjs/swagger";
 
 @Entity()
 export class Location {
     @PrimaryGeneratedColumn('increment')
     locationId: number;
+
+    @ApiProperty({
+        default: "OCSO juriquilla"
+    })
     @Column('text')
     locationName: string
+
+    @ApiProperty({
+        default: "Avenida tal, s/n, 76115"
+    })
     @Column('text')
-    locationAdress: string
+    locationAddress: string
+
+    @ApiProperty({
+        default: [12, 12]
+    })
     @Column('simple-array')
     locationLatLng: number[];
 
-    @OneToOne(()=>Manager)
+    @OneToOne(()=>Manager, {
+        eager: true, 
+    })
     @JoinColumn({
         name: "managerId"
     })

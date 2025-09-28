@@ -1,5 +1,8 @@
-import {Entity, PrimaryGeneratedColumn, Column, OneToOne} from "typeorm"
+import {Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn} from "typeorm"
 import {Location} from "src/locations/entities/location.entity"
+import { User } from "src/auth/entities/user.entity";
+
+
 @Entity()
 export class Manager {
     @PrimaryGeneratedColumn('uuid')
@@ -8,7 +11,9 @@ export class Manager {
     managerFullName: string
     @Column('float')
     managerSalary:number
-    @Column('text')
+    @Column('text',{
+        unique: true,
+    })
     managerEmail:string
     @Column('text')
     managerPhoneNumber: string
@@ -16,4 +21,8 @@ export class Manager {
 
     @OneToOne(()=>Location)
     location:Location
+
+  @OneToOne(() => User, user => user.manager) // <-- sin JoinColumn aquí
+    user: User;
+    
 }

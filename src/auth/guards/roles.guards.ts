@@ -1,27 +1,35 @@
 import { ExecutionContext, Injectable, CanActivate } from "@nestjs/common";
-import { Roles } from "../decorators/roles.decorator";
 import { Reflector } from "@nestjs/core";
 import { User } from "../entities/user.entity";
+import { Roles } from "../decorators/roles.decorator";
+
 @Injectable()
 export class RolesGuard implements CanActivate {
-    constructor(private reflector: Reflector){}
+  constructor(private reflector: Reflector) {}
 
-
-    canActivate(context: ExecutionContext): boolean {
-        const roles = this.reflector.get(Roles, context.getHandler());
-        if (!roles){
-            return true;
-        }
-        const request = context.switchToHttp().getRequest();
-        const user: User = request.user
-        return this.matchRoles(roles, user.userRoles)
+  canActivate(context: ExecutionContext): boolean {
+    // Reflector === Metadata del decorador @Roles()
+    const roles = this.reflector.get<string[]>(Roles, context.getHandler());
+    if (!roles || roles.length === 0) {
+      return true; // Si el endpoint no requiere roles, deja pasar
     }
 
-    matchRoles(roles: string[], userRoles: string[]){
-        let access = false;
-        userRoles.forEach((userRole)=> {
-            if (roles.includes(userRole)) access = true
-        })
-        return access;
+    const request = context.switchToHttp().getRequest();
+    const user: User = request.user;
+console.log('>>> Usuario en request:', user);
+    // Si no hay usuario o no tiene roles definidos, niega acceso
+    if (!user || !user.userRoles) {
+      return false;
     }
+
+    return this.matchRoles(roles, user.userRoles);
+  }
+
+  private matchRoles(roles: string[], userRoles: string[] = []): boolean {
+    return userRoles.some((userRole) =>
+      roles.some((role) => role.toLowerCase() === userRole.toLowerCase()),
+    );
+  }
+
+  
 }
