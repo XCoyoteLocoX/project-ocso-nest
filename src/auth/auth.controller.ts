@@ -17,21 +17,24 @@ export class AuthController {
   signup(@Body() createUserDto: CreateUserDto) {
     return this.authService.registerUser(createUserDto);
   }
+@Post('login')
+async login(
+  @Body() loginUserDto: LoginUserDto,
+  @Res({ passthrough: true }) response: Response
+) {
+  const token = await this.authService.loginUser(loginUserDto);
 
-  @Post('login')
-  async login(
-    @Body() loginUserDto: LoginUserDto,
-    @Res({ passthrough: true }) response: Response, @Cookies() cookies:any) {
-    const token = await this.authService.loginUser(loginUserDto);
-    response.cookie(TOKEN_NAME, token, {
-      httpOnly: false,
-      secure: false,
-      sameSite: 'none',
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    });
+response.cookie(TOKEN_NAME, token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax',
+  maxAge: 1000 * 60 * 60 * 24 * 7,
+  path: '/',
+});
 
-    return { token };
-  }
+  return { message: 'Login exitoso' };
+}
+
 
   @Patch('/:email')
   updateUser(
