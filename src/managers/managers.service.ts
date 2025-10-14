@@ -24,6 +24,7 @@ export class ManagersService {
     managerId:id,
     })
     if (!manager) throw new NotFoundException("No location found")
+      return manager;
   }
 
   async update(id: string, updateManagerDto: UpdateManagerDto) {

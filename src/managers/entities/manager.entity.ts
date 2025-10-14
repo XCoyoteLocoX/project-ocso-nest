@@ -20,9 +20,15 @@ export class Manager {
 
 
     @OneToOne(()=>Location)
+    @JoinColumn({
+      name:"locationId"
+    })
     location:Location
 
-  @OneToOne(() => User, user => user.manager) // <-- sin JoinColumn aquí
+  @OneToOne(() => User) 
+  @JoinColumn({
+    name: "userId"
+  })
     user: User;
     
 }
